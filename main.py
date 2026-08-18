@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from schemas import CoachingRequest, CoachingResult
 from llm import ask_json
 import time
+from pipeline import run_pipeline
 
 app = FastAPI(title="AI 면접 코치")
 
@@ -30,4 +31,12 @@ def get_coaching(data: CoachingRequest) -> CoachingResult:
 
     result = ask_json(prompt, system=SYSTEM)
     print(f"소요 시간: {time.time() - start:.1f}초")
+    return CoachingResult(**result)
+
+@app.post("/coaching/pipeline", response_model=CoachingResult)
+def get_coaching_pipeline(data: CoachingRequest) -> CoachingResult:
+    # 신규 파이프라인 방식
+    start = time.time()
+    result = run_pipeline(data.job, data.question, data.answer)
+    print(f"[파이프라인] 소요 시간: {time.time() - start:.1f}초")
     return CoachingResult(**result)
