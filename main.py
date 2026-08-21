@@ -3,6 +3,7 @@ from schemas import CoachingRequest, CoachingResult
 from llm import ask_json
 import time
 from pipeline import run_pipeline
+from pipeline_rag import run_pipeline_rag
 
 app = FastAPI(title="AI 면접 코치")
 
@@ -46,4 +47,12 @@ def get_coaching_lc(data: CoachingRequest) -> CoachingResult:
     start = time.time()
     result = run_pipeline_lc(data.job, data.question, data.answer)
     print(f"[LangChain] 소요 시간: {time.time() - start:.1f}초")
+    return CoachingResult(**result)
+
+@app.post("/coaching/rag", response_model=CoachingResult)
+def get_coaching_rag(data: CoachingRequest) -> CoachingResult:
+    start = time.time()
+    result = run_pipeline_rag(data.job, data.question, data.answer)
+    print(f"[RAG] 참고 공고: {result['_sources']}")
+    print(f"[RAG] 소요 시간: {time.time() - start:.1f}초")
     return CoachingResult(**result)
