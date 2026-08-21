@@ -40,3 +40,10 @@ def get_coaching_pipeline(data: CoachingRequest) -> CoachingResult:
     result = run_pipeline(data.job, data.question, data.answer)
     print(f"[파이프라인] 소요 시간: {time.time() - start:.1f}초")
     return CoachingResult(**result)
+
+@app.post("/coaching/langchain", response_model=CoachingResult)
+def get_coaching_lc(data: CoachingRequest) -> CoachingResult:
+    start = time.time()
+    result = run_pipeline_lc(data.job, data.question, data.answer)
+    print(f"[LangChain] 소요 시간: {time.time() - start:.1f}초")
+    return CoachingResult(**result)
